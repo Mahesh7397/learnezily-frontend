@@ -1,18 +1,68 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --border:;
-  --primary:;
+  --background: #11151C;
+  --foreground: #ffffff;
+  --border:#364156;
+  --primary:#216EBC;
   --secondary:;
-  --box:;
-  --text:;
+  --box:#212D40;
+  --bar:#364156;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-box:var(--box);
+  --color-border:var(--border);
+  --color-primary:var(--primary);
+  --color-bar:var(--bar);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+}
+
+body {
+   background-color:var(--background);
+}
+
+/* FullCalendar Dark Mini Theme */
+
+.fc {
+  --fc-border-color: #1e293b;
+  --fc-page-bg-color: transparent;
+  --fc-neutral-bg-color: #020617;
+  --fc-today-bg-color: rgba(59, 130, 246, 0.15);
+  --fc-event-bg-color: #3b82f6;
+  --fc-event-border-color: transparent;
+}
+
+.fc .fc-toolbar-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.fc .fc-button {
+  background: #1e293b;
+  border: none;
+  padding: 4px 6px;
+}
+
+.fc .fc-button:hover {
+  background: #334155;
+}
+
+.fc-daygrid-day-number {
+  font-size: 12px;
+  color: #cbd5f5;
+}
+
+.fc-col-header-cell {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.fc-daygrid-event {
+  font-size: 10px;
+  padding: 1px 4px;
+  border-radius: 4px;
 }
