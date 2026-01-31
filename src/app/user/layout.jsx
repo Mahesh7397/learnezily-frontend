@@ -11,6 +11,7 @@ const navItems = [
 
 
 
+
 export default function UserLayout({ children }) {
     const router = useRouter();
     const pathname = usePathname();
@@ -19,7 +20,7 @@ export default function UserLayout({ children }) {
         <div className="bg-background relative">
             {/**Floating bar */}
 
-            <div className="fixed h-14 bottom-5 left-1/2 flex w-[93%] md:w-[420px] -translate-x-1/2 items-center justify-between gap-4 rounded-2xl border border-border bg-box/80 ">
+            <div className="fixed h-14 bottom-5 left-1/2 flex w-[93%] md:w-[420px] -translate-x-1/2 items-center justify-between gap-4 rounded-2xl border border-border bg-box z-10 ">
                 <nav className="w-full flex justify-around gap-4 ">
                     {navItems.map((item) => (
                         <button
