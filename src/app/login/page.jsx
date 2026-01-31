@@ -1,20 +1,37 @@
 "use client";
 
 import GoogleLogin from "@/component/GoogleLogin";
+import { useAlert } from "@/context/AlertContext";
+import api from "@/lib/Api";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 // import { loginWithEmail, loginWithGoogle } from "@/lib/auth";
 
 export default function LoginPage() {
+  const router=useRouter()
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const {showAlert}=useAlert()
 
   const handleLogin = async () => {
     try {
       setLoading(true);
       // await loginWithEmail(email, password);
-    } catch (err) {
-      alert(err.message);
+      const res=await api.post("/auth/login",{
+        email:email,
+        password:password
+      })
+      if(res?.data?.code===20){
+        showAlert("Successfuly logined ","success")
+        router.push("/user/dashboard")
+      }
+      showAlert(res?.data?.message,"error")
+    } catch (error) {
+       const msg =
+      error?.response?.data?.message ||
+      "Server error. Try again.";
+    showAlert(msg, "error");
     } finally {
       setLoading(false);
     }

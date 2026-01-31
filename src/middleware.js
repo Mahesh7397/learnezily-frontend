@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
-
+import jwt from "jsonwebtoken"
 
 export function middleware(req) {
-    const token = req.cookies.get("token")?.value;
-
+  const token = req.cookies.get("token")?.value;
   if (!token) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
   const user = jwt.decode(token);
+  // console.log(user)
   const path = req.nextUrl.pathname;
 
   // ADMIN ONLY

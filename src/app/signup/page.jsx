@@ -4,8 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 
 import GoogleLogin from "@/component/GoogleLogin";
+import api from "@/lib/Api";
+import { useAlert } from "@/context/AlertContext";
+import { useRouter } from "next/navigation";
 
 export default function SignupPage() {
+  const router=useRouter()
+  const { showAlert } = useAlert()
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -19,19 +24,34 @@ export default function SignupPage() {
     setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit =async(e) => {
     e.preventDefault();
-
     if (form.password !== form.confirmPassword) {
       setError("Passwords do not match");
       return;
     }
-
-    console.log("Signup data:", form);
+    try {
+      const res=await api.post("/auth/register",{
+        email:form.email,
+        password:form.password
+      })
+      if(res?.data?.code===20){
+        showAlert("OTP sent to your email", "success");
+        sessionStorage.setItem("verifyEmail", form.email);
+        router.push("/verify-email");
+      }
+      else{
+        showAlert(res?.data?.message, "error");
+      }
+    } catch (error) {
+         const msg =
+      error?.response?.data?.message ||
+      "Server error. Try again.";
+    showAlert(msg, "error");
+    }
     // TODO: connect backend
     // after backend says OTP sent successfully
-    sessionStorage.setItem("verifyEmail", form.email);
-    router.push("/verify-email");
+   
   };
 
   return (
