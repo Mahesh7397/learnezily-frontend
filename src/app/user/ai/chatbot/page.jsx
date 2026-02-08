@@ -1,103 +1,152 @@
+
 "use client";
+import React, { useEffect, useState } from 'react';
+import { Plus, Settings2, ArrowUp } from 'lucide-react'; // Using lucide-react for icons
 
-import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { 
-  Plus, 
-  Settings2, 
-  ArrowUp, 
-  Calendar, 
-  Map, 
-  Search, 
-  PencilLine, 
-  BrainCircuit 
-} from "lucide-react";
+import api from '@/lib/Api';
 
-export default function ChatBotPage() {
-  const [inputValue, setInputValue] = useState("");
+function ThinkingLoader() {
+  return (
+    <div className="flex flex-col items-start space-y-2 p-4">
+      <div className="flex items-center space-x-2">
+        {/* The Animated Icon */}
+        <div className="relative flex h-3 w-3">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+        </div>
+        <span className="text-xs text-gray-500 font-medium tracking-tight">Fifi is thinking...</span>
+      </div>
+      
+      {/* Subtle Skeleton Bar */}
+      <motion.div 
+        initial={{ opacity: 0.3 }}
+        animate={{ opacity: [0.3, 0.6, 0.3] }}
+        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+        className="h-3 w-48 bg-[#262626] rounded-full"
+      />
+    </div>
+  );
+}
 
-  const quickActions = [
-    { icon: <Calendar size={14} className="text-red-400" />, label: "Schedule planner" },
-    { icon: <Map size={14} className="text-blue-400" />, label: "Roadmap" },
-    { icon: <Search size={14} className="text-cyan-400" />, label: "Deep dive" },
-    { icon: <PencilLine size={14} className="text-amber-400" />, label: "Quiz Gen" },
-    { icon: <BrainCircuit size={14} className="text-pink-400" />, label: "Flashcards gen" },
-  ];
+export default function ChatInterface() {
+    const [Chat,setChat]=useState([])
+    const [loading,setloading]=useState(true)
+    const [message,setmessage]=useState("")
+
+    const handlechat=async()=>{
+        try {
+            const m=message
+            setloading(true)
+            setChat([...Chat,{id:"me",message:message}])
+            setmessage("")
+            console.log(m)
+            const res = await api.post("/ai/chat", {message:m});
+            setChat([...Chat,{id:"ai",message:res.data.message}])
+        } catch (error) {
+            console.error("API error:", err);
+        }finally {
+        setloading(false);
+      }
+    }
+
+    useEffect(()=>{
+         const sendQuiz = async () => {
+      try {
+        setloading(true);
+        const stored = localStorage.getItem("aichat");
+        if (!stored) {
+          route.push("/");
+          return;
+        }
+        const data = JSON.parse(stored);
+        setChat(data)
+        const res = await api.post("/ai/chat", {message:data[0].message});
+        console.log(res.data)
+        setChat([...Chat,{id:"ai",message:res.data.message}])
+        console.log(Chat)
+      } catch (err) {
+        console.error("API error:", err);
+      } finally {
+        setloading(false);
+      }
+    };
+    sendQuiz();
+    },[])
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-white flex flex-col items-center justify-center p-6 font-sans">
-      
-      {/* --- Greeting Section --- */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-10"
-      >
-        <h2 className="text-2xl font-medium mb-2">
-          Hi <span className="text-blue-400">Mohamed</span>
-        </h2>
-        <h1 className="text-5xl font-bold tracking-tight text-white/90">
-          Where should we start?
-        </h1>
-      </motion.div>
+    <div className="flex flex-col h-screen bg-[#0d0d0d] text-gray-200 font-sans p-4">
+      {/* Top Header/Brand */}
+      <div className="p-4 text-xs font-semibold text-gray-500 tracking-widest">
+        FIFI
+      </div>
 
-      {/* --- Chat Input Container --- */}
-      <div className="w-full max-w-3xl">
-        <div className="bg-[#171717] rounded-[28px] p-4 border border-white/5 shadow-2xl">
+      {/* Message Area */}
+      <div className="flex-1 flex flex-col items-center justify-center max-w-3xl mx-auto w-full space-y-8">
+        {/* User Message Bubble */}
+        {Chat.map((d)=>{
+         if(d.id==="me"){
+            <div className='w-full h-auto flex justify-end '>
+        <div className="bg-[#262626] px-4 py-2 rounded-2xl text-sm min-w-auto max-w-full">
+          {d.message}
+        </div>
+        </div>
+         }
+         if(d.id==="ai"){
+            <div className='w-full h-auto flex justify-start '>
+        <div className="bg-[#262626] px-4 py-2 rounded-2xl text-sm min-w-auto max-w-full">
+         {d.message}
+        </div>
+        </div>
+         }
+        })}
+
+        {/* AI Response Text */}
+        {loading?<div className='w-full h-auto flex justify-start '>
+        <div className="bg-[#262626] px-4 py-2 rounded-2xl text-sm min-w-auto max-w-full">
+          <ThinkingLoader/>
+        </div>
+        </div>:null}
+      </div>
+
+      {/* Input Section */}
+      <div className="max-w-3xl mx-auto w-full pb-10">
+        <div className="relative bg-[#1a1a1a] rounded-3xl border border-[#2d2d2d] focus-within:border-[#404040] transition-all p-2">
+          {/* Text Input */}
           <textarea
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            rows={1}
             placeholder="Ask Fifi"
-            className="w-full bg-transparent resize-none outline-none px-4 py-2 text-lg text-white placeholder-gray-500 min-h-[60px]"
+            value={message}
+            onChange={(e)=>setmessage(e.target.value)}
+            className="w-full bg-transparent border-none focus:ring-0 text-gray-100 placeholder-gray-500 py-3 px-4 resize-none min-h-[56px] outline-none"
           />
-          
-          <div className="flex items-center justify-between mt-4 px-2">
-            <div className="flex items-center gap-4">
-              <button className="p-2 hover:bg-white/5 rounded-full transition-colors text-gray-400">
-                <Plus size={20} />
+
+          {/* Bottom Toolbar */}
+          <div className="flex items-center justify-between px-2 pb-1">
+            <div className="flex items-center gap-3">
+              <button className="p-2 hover:bg-[#2d2d2d] rounded-full transition text-gray-400">
+                <Plus size={18} />
               </button>
-              <button className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/5 rounded-full transition-colors text-gray-400 text-sm font-medium">
-                <Settings2 size={18} />
+              <button className="flex items-center gap-1.5 p-2 hover:bg-[#2d2d2d] rounded-lg transition text-gray-400 text-xs font-medium">
+                <Settings2 size={16} />
                 Tools
-                <span className="text-[10px] ml-1 opacity-50">▼</span>
+                <span className="text-[10px] ml-0.5 opacity-50">▼</span>
               </button>
             </div>
 
-            <button 
-              disabled={!inputValue.trim()}
-              className={`p-3 rounded-full transition-all ${
-                inputValue.trim() 
-                  ? "bg-white text-black" 
-                  : "bg-[#2A2A2A] text-gray-500 cursor-not-allowed"
-              }`}
-            >
-              <ArrowUp size={20} strokeWidth={3} />
+            {/* Send Button */}
+            <button className="bg-white p-2 rounded-full text-black hover:bg-gray-200 transition" disabled={loading} onClick={()=>handlechat()} >
+              <ArrowUp size={20} />
             </button>
           </div>
+
+          {/* Tiny Robot Icon (as seen in screenshot) */}
+          <div className="absolute right-4 top-4 text-emerald-500 opacity-80">
+            <div className="w-5 h-5 bg-emerald-900/30 rounded flex items-center justify-center border border-emerald-500/30">
+              <div className="w-2 h-2 bg-emerald-400 rounded-sm" />
+            </div>
+          </div>
         </div>
-
-        {/* --- Quick Action Pills --- */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="flex flex-wrap justify-center gap-3 mt-8"
-        >
-          {quickActions.map((action, idx) => (
-            <button
-              key={idx}
-              className="flex items-center gap-2.5 px-4 py-2 bg-[#1A1A1A] border border-white/5 rounded-full hover:bg-[#252525] hover:border-white/10 transition-all text-xs font-medium text-gray-300"
-            >
-              {action.icon}
-              {action.label}
-            </button>
-          ))}
-        </motion.div>
-      </div>
-
-      {/* --- Sidebar Branding (Optional - top left as per screenshot) --- */}
-      <div className="fixed top-6 left-8">
-        <span className="text-[10px] font-black tracking-[0.3em] text-gray-500 uppercase">Fifi</span>
       </div>
     </div>
   );

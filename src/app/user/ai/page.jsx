@@ -12,10 +12,16 @@ import {
   PencilLine, 
   BrainCircuit 
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function ChatBotPage() {
   const [inputValue, setInputValue] = useState("");
-
+  const route=useRouter()
+  const onchat=()=>{
+    const data=[{id:"me",message:inputValue}]
+    localStorage.setItem("aichat",JSON.stringify(data))
+    route.push("/user/ai/chatbot")
+  }
   const quickActions = [
     { icon: <Calendar size={14} className="text-red-400" />, label: "Schedule planner" },
     { icon: <Map size={14} className="text-blue-400" />, label: "Roadmap" },
@@ -43,7 +49,7 @@ export default function ChatBotPage() {
 
       {/* --- Chat Input Container --- */}
       <div className="w-full max-w-3xl">
-        <div className="bg-[#171717] rounded-[28px] p-4 border border-white/5 shadow-2xl">
+        <div className="bg-[#171717] rounded-[28px] p-4 border border-white/5 shadow-2xl flex ">
           <textarea
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
@@ -51,18 +57,19 @@ export default function ChatBotPage() {
             className="w-full bg-transparent resize-none outline-none px-4 py-2 text-lg text-white placeholder-gray-500 min-h-[60px]"
           />
           
-          <div className="flex items-center j0 mt-4 px-2">
+          
             <button 
               disabled={!inputValue.trim()}
-              className={`p-3 rounded-full transition-all ${
+              className={`p-3 rounded-full transition-all w-14 h-14 flex justify-center items-center ${
                 inputValue.trim() 
                   ? "bg-white text-black" 
                   : "bg-[#2A2A2A] text-gray-500 cursor-not-allowed"
               }`}
+              onClick={()=>onchat()}
             >
               <ArrowUp size={20} strokeWidth={3} />
             </button>
-          </div>
+          
         </div>
 
         {/* --- Quick Action Pills --- */}
