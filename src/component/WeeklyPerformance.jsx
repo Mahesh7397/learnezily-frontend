@@ -19,7 +19,7 @@ export default function WeeklyPerformance() {
       </h2>
 
       {/* Gauge */}
-      <div className="relative w-full h-full">
+      <div className="relative w-full h-full ">
         <ResponsiveContainer width="100%" height="100%">
           <RadialBarChart
             data={data}

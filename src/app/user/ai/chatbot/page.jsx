@@ -51,7 +51,18 @@ export default function ChatBotPage() {
             className="w-full bg-transparent resize-none outline-none px-4 py-2 text-lg text-white placeholder-gray-500 min-h-[60px]"
           />
           
-          <div className="flex items-center j0 mt-4 px-2">
+          <div className="flex items-center justify-between mt-4 px-2">
+            <div className="flex items-center gap-4">
+              <button className="p-2 hover:bg-white/5 rounded-full transition-colors text-gray-400">
+                <Plus size={20} />
+              </button>
+              <button className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/5 rounded-full transition-colors text-gray-400 text-sm font-medium">
+                <Settings2 size={18} />
+                Tools
+                <span className="text-[10px] ml-1 opacity-50">▼</span>
+              </button>
+            </div>
+
             <button 
               disabled={!inputValue.trim()}
               className={`p-3 rounded-full transition-all ${
